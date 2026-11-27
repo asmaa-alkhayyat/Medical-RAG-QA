@@ -93,5 +93,3 @@ def page_router(print_report=True):
 
 if __name__ == "__main__":
     page_router()
-
-

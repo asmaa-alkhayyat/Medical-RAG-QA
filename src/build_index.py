@@ -31,7 +31,7 @@ def build_index():
 
     client = chromadb.PersistentClient(path=str(DB_FOLDER))
 
-    # delete the old collection when run again
+    # Delete the old collection when run again
     try:
         client.delete_collection(COLLECTION_NAME)
     except Exception:

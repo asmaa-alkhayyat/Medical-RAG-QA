@@ -18,7 +18,7 @@ st.title("🩺 Medical RAG Assistant")
 st.warning(DISCLAIMER)
 st.caption("Each question is answered on its own, without memory of earlier questions. Please write complete questions.")
 
-question = st.chat_input("Ask a question about the documents / اسألي عن المستندات")
+question = st.chat_input("Ask a question about the documents / اسأل عن المستندات")
 
 if question:
     st.chat_message("user").write(question)
@@ -26,7 +26,6 @@ if question:
     with st.spinner("Searching the documents..."):
         answer, chunks = answer_question(question)
 
-    # the last line "SOURCES: ..." is hidden from the answer and used to find the pages
     parts = answer.split("SOURCES:")
     answer_text = parts[0].strip()
     st.chat_message("assistant").write(answer_text)
@@ -53,9 +52,7 @@ if question:
 
         for chunk in cited_chunks:
             if chunk["image_path"] != "":
-                with st.expander(f"Original page image and full content (page {chunk['page']})"):
+                with st.expander(f"Original page image (page {chunk['page']})"):
                     st.image(str(ROOT / chunk["image_path"]))
                     if "STEP 1 - BOXES" in chunk["text"]:
-                        st.caption("The arrows in this flowchart were extracted automatically and may contain errors. Please check them against the image above.")
-                    st.markdown("**Full content of this page's figure or table (text):**")
-                    st.text(chunk["text"])
+                        st.caption("The answer uses text that was read automatically from this flowchart, including the arrows, and it may contain errors. Please check it against the image above.")

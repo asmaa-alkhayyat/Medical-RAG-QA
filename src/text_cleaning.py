@@ -62,15 +62,12 @@ def remove_headers_footers(text, repeated_lines):
     return "\n".join(kept_lines)
 
 
-
-
-
-
 def clean_text(text, words_in_file):
     text = fix_ligatures(text)
     text = fix_double_bullets(text)
     text = fix_broken_words(text, words_in_file)
     return text
+
 
 def show_cleaning_results():
     decisions = page_router(print_report=False)
@@ -95,7 +92,7 @@ def show_cleaning_results():
 
         for page_num, text in pages.items():
 
-            # fix_ligatures
+            # Fix ligatures
             for position in range(len(text)):
                 character = text[position]
                 if "LIGATURE" in unicodedata.name(character, ""):
@@ -103,14 +100,14 @@ def show_cleaning_results():
                     example = text[start : position + 10].replace("\n", " ")
                     print(f"  page {page_num} | ligature | BEFORE: {example} | AFTER: {fix_ligatures(example)}")
 
-            # fix_double_bullets
+            # Fix double bullets
             position = text.find("••")
             if position != -1:
                 start = max(0, position - 5)
                 example = text[start : position + 25].replace("\n", " ")
                 print(f"  page {page_num} | double bullets | BEFORE: {example} | AFTER: {fix_double_bullets(example)}")
 
-            # fix_broken_words
+            # Fix broken words
             pairs = set(re.findall(r"([A-Za-z]+)-\s+([a-z]+)", text))
             for first_part, second_part in pairs:
                 whole_word = first_part + second_part
@@ -120,5 +117,3 @@ def show_cleaning_results():
                     
 if __name__ == "__main__":
     show_cleaning_results()
-
-

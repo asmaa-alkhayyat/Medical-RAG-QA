@@ -72,7 +72,7 @@ def extract_content():
                 block_box = pymupdf.Rect(block[:4])
                 block_text = remove_headers_footers(block[4], repeated_lines)
 
-                # page number: a block with only a number at the top or bottom of the page
+                # Page number: a block with only a number at the top or bottom of the page
                 at_page_edge = block_box.y0 > page.rect.height * 0.9 or block_box.y1 < page.rect.height * 0.1
                 if block_text.strip() == "" or (block_text.strip().isdigit() and at_page_edge):
                     continue
@@ -87,6 +87,7 @@ def extract_content():
                 center = (block_box.tl + block_box.br) / 2
                 inside_table = False
                 note_of_table = None
+               
                 for number, box in enumerate(table_boxes):
                     if box.contains(center):
                         inside_table = True
@@ -111,13 +112,12 @@ def extract_content():
                     kept_blocks.append(block_text)
             page_text = "".join(kept_blocks)
 
-            # notes under each table join the table itself
+            # Notes under each table join the table itself
             for number in range(len(tables_markdown)):
                 if table_notes[number].strip():
                     tables_markdown[number] += "\n\nNotes:\n" + table_notes[number].strip()
 
-            # 3) remove references and cut the start of the page
-            if content_end_char is not None:
+            # Remove references
                 heading = REF_HEADING.search(page_text)
                 if heading:
                     page_text = page_text[:heading.start()]
@@ -128,11 +128,10 @@ def extract_content():
                 if position != -1:
                     page_text = page_text[position:]
 
-            # 4) clean text
+            # Clean text
             page_text = clean_text(page_text, words_in_file).strip()
             tables_markdown = [clean_text(t, words_in_file) for t in tables_markdown]
 
-            # 5) save items
             needs_vision = (action == "vision")
             if page_text:
                 all_items.append({"source": pdf_path.name, "page": page_num, "type": "text",

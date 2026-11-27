@@ -59,7 +59,7 @@ def clean_vision_description(description):
     for line in description.split("\n"):
         line = line.rstrip()
 
-        # 1) skip label lines
+        # Skip label lines
         is_label = False
         if line.strip()[:2] in ["A)", "B)", "C)", "D)"]:
             for word in LABEL_WORDS:
@@ -68,7 +68,7 @@ def clean_vision_description(description):
         if is_label:
             continue
 
-        # 2) delete the icon description 
+        # Delete the icon description 
         if "(icon of" in line:
             line = line[:line.index("(icon of")].rstrip()
 
@@ -76,7 +76,7 @@ def clean_vision_description(description):
 
     text = "\n".join(kept_lines).strip()
 
-    # 3) delete an empty notes section 
+    # Delete empty notes section 
     heading = "SIDE PANELS AND NOTES"
     position = text.find(heading)
     if position != -1 and text[position + len(heading):].strip() == "(None)":
@@ -143,7 +143,7 @@ def merge_vision():
         for wrong_text, correct_text in TEXT_TYPOS:
             description = description.replace(wrong_text, correct_text)
 
-        # known errors fixed by hand
+        # Errors fixed by hand
         for wrong_text, correct_text in MANUAL_FIXES.get((file_name, page_num), []):
             if wrong_text in description:
                 description = description.replace(wrong_text, correct_text)
@@ -153,7 +153,7 @@ def merge_vision():
         if "STEP 2" in description:
             description = description + "\n\n" + ARROWS_WARNING
 
-        # save the page image
+        # Save page image
         image_file = IMAGES_DIR / f"{stem}_p{page_num:02d}.png"
         if not image_file.exists():
             pdf = pymupdf.open(PDF_DIR / file_name)
@@ -161,7 +161,6 @@ def merge_vision():
             pdf.close()
             image_file.write_bytes(image_bytes)
 
-        # If Gemini copied the side panels and notes in clean order, the scrambled text item of this page is not needed
         if "SIDE PANELS AND NOTES" in description:
             print("Page", page_num, "of", file_name, ": the text item is replaced by the clean description")
         else:
